@@ -1,5 +1,6 @@
 import InputHandler from "./InputHandler";
 import Player from "./Player";
+import UI from "./UI";
 
 export type Keys = {
   up: boolean;
@@ -14,6 +15,7 @@ export default class Game {
   height: number;
   player: Player;
   input: InputHandler;
+  ui: UI;
   keys: Keys = {
     up: false,
     down: false,
@@ -26,11 +28,13 @@ export default class Game {
     this.height = height;
     this.player = new Player(this);
     this.input = new InputHandler(this);
+    this.ui = new UI(this);
   }
   update() {
     this.player.update();
   }
   draw(ctx: CanvasRenderingContext2D) {
     this.player.draw(ctx);
+    this.ui.draw(ctx);
   }
 }
