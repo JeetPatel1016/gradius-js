@@ -1,4 +1,5 @@
 import Game from "./Game";
+import Projectile from "./Projectile";
 
 export default class Player {
   game: Game;
@@ -9,6 +10,11 @@ export default class Player {
   speedX = 0;
   speedY = 0;
   maxSpeed = 3;
+  projectiles: Projectile[] = [];
+
+  lastShotTime = 0;
+  shootCooldown = 100;
+
   constructor(game: Game) {
     this.game = game;
     this.x = 20;
@@ -42,8 +48,31 @@ export default class Player {
 
     this.x += this.speedX;
     this.y += this.speedY;
+
+    // Handle shooting projectiles
+    if (this.game.keys.shoot) this.shoot();
+
+    this.projectiles.forEach((projectile) => projectile.update());
+    this.projectiles = this.projectiles.filter(
+      (projectile) => !projectile.markedForDelete
+    );
   }
   draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = "black";
     ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.projectiles.forEach((projectile) => projectile.draw(ctx));
+  }
+
+  shoot() {
+    const currentTime = Date.now();
+    if (currentTime - this.lastShotTime > this.shootCooldown) {
+      this.projectiles.push(
+        new Projectile(this.game, this.x + this.width, this.y + this.height / 2)
+      );
+      this.lastShotTime = currentTime;
+    }
+    // this.projectiles.push(
+    //   new Projectile(this.game, this.x + this.width, this.y + this.height / 2)
+    // );
   }
 }
