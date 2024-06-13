@@ -1,5 +1,7 @@
+import { Enemy, Garun } from "./Enemy";
 import InputHandler from "./InputHandler";
 import Player from "./Player";
+import Projectile from "./Projectile";
 import UI from "./UI";
 
 export type Keys = {
@@ -11,11 +13,15 @@ export type Keys = {
 };
 
 export default class Game {
+  // Meta variables
   width: number;
   height: number;
+  ui: UI;
+  score = 0;
+
+  // Variables for Player and input handling
   player: Player;
   input: InputHandler;
-  ui: UI;
   keys: Keys = {
     up: false,
     down: false,
@@ -23,6 +29,13 @@ export default class Game {
     right: false,
     shoot: false,
   };
+  // Variables for enemies
+  enemies: Enemy[] = [];
+  enemyTimer = 0;
+  enemyInterval = 100;
+
+  gameOver = false;
+
   constructor(width: number, height: number) {
     this.width = width;
     this.height = height;
@@ -32,9 +45,49 @@ export default class Game {
   }
   update() {
     this.player.update();
+    this.enemies.forEach((enemy) => {
+      enemy.update();
+      if (this.checkCollision(this.player, enemy)) {
+        enemy.markedForDeletion = true;
+      }
+      this.player.projectiles.forEach((projectile) => {
+        if (this.checkCollision(projectile, enemy)) {
+          enemy.lives--;
+          projectile.markedForDelete = true;
+          if (enemy.lives <= 0) {
+            this.score += enemy.score;
+            enemy.markedForDeletion = true;
+          }
+        }
+      });
+    });
+    this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
+    if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
+      this.addEnemy();
+      this.enemyTimer = 0;
+    } else {
+      this.enemyTimer++;
+    }
   }
   draw(ctx: CanvasRenderingContext2D) {
     this.player.draw(ctx);
     this.ui.draw(ctx);
+    this.enemies.forEach((enemy) => {
+      enemy.draw(ctx);
+    });
+  }
+  addEnemy() {
+    this.enemies.push(new Garun(this));
+  }
+  checkCollision(
+    rect1: Player | Enemy | Projectile,
+    rect2: Player | Enemy | Projectile
+  ) {
+    return (
+      rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.width > rect2.y
+    );
   }
 }

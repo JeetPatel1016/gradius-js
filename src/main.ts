@@ -3,7 +3,7 @@ import Game from "./classes/Game";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
 
-canvas.width = 600;
+canvas.width = 800;
 canvas.height = 600;
 
 const game = new Game(canvas.width, canvas.height);
