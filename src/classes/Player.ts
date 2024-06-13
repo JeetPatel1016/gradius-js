@@ -14,6 +14,7 @@ export default class Player {
 
   lastShotTime = 0;
   shootCooldown = 100;
+  lives = 3;
 
   constructor(game: Game) {
     this.game = game;
