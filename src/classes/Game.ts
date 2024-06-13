@@ -1,3 +1,4 @@
+import Background from "./Background";
 import { Enemy, Garun } from "./Enemy";
 import InputHandler from "./InputHandler";
 import Player from "./Player";
@@ -34,7 +35,12 @@ export default class Game {
   enemyTimer = 0;
   enemyInterval = 100;
 
+  // Game States
   gameOver = false;
+
+  // Background Layers Handling
+  speed = 1;
+  bg: Background;
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -42,8 +48,10 @@ export default class Game {
     this.player = new Player(this);
     this.input = new InputHandler(this);
     this.ui = new UI(this);
+    this.bg = new Background(this);
   }
   update() {
+    this.bg.update();
     this.player.update();
     this.enemies.forEach((enemy) => {
       enemy.update();
@@ -73,6 +81,7 @@ export default class Game {
     }
   }
   draw(ctx: CanvasRenderingContext2D) {
+    this.bg.draw(ctx);
     this.player.draw(ctx);
     this.ui.draw(ctx);
     this.enemies.forEach((enemy) => {
