@@ -31,6 +31,6 @@ export class Garun extends Enemy {
     super(game);
     this.width = 50;
     this.height = 50;
-    this.y = Math.random() * (this.game.height * 0.9 - this.height);
+    this.y = Math.random() * (this.game.height * 0.8 - this.height);
   }
 }

@@ -47,8 +47,14 @@ export default class Player {
       this.speedX = -this.maxSpeed;
     }
 
-    this.x += this.speedX;
-    this.y += this.speedY;
+    this.x = this.x + this.speedX;
+    this.x = Math.max(12, Math.min(this.x, this.game.width - this.width - 12));
+
+    this.y = this.y + this.speedY;
+    this.y = Math.max(
+      12,
+      Math.min(this.y, this.game.height * 0.8 - this.height - 12)
+    );
 
     // Handle shooting projectiles
     if (this.game.keys.shoot) this.shoot();
@@ -72,8 +78,5 @@ export default class Player {
       );
       this.lastShotTime = currentTime;
     }
-    // this.projectiles.push(
-    //   new Projectile(this.game, this.x + this.width, this.y + this.height / 2)
-    // );
   }
 }
