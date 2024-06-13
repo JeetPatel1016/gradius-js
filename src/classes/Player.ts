@@ -5,39 +5,51 @@ export default class Player {
   game: Game;
   width: number;
   height: number;
+  // Speed and Position
   x: number;
   y: number;
   speedX = 0;
   speedY = 0;
   maxSpeed = 3;
+  // Lives and Projectiles
+  lives = 3;
   projectiles: Projectile[] = [];
-
   lastShotTime = 0;
   shootCooldown = 100;
-  lives = 3;
+
+  // Sprite Animation
+  sheet: HTMLImageElement;
+  sheetOffsetX = 2;
+  staggerFrames = 2;
 
   constructor(game: Game) {
     this.game = game;
     this.x = 20;
     this.y = 100;
-    this.width = 70;
-    this.height = 30;
+    this.width = 90 / 1.2;
+    this.height = 48 / 1.2;
+    this.sheet = document.getElementById("vicViper") as HTMLImageElement;
   }
   update() {
     const sin45 = Math.sin(Math.PI / 4);
     // Reset speed
     this.speedX = 0;
     this.speedY = 0;
+    // this.sheetOffsetX = 2;
 
     // Handle vertical movement
     if (this.game.keys.up) {
+      this.rollUp();
       this.speedY =
         -this.maxSpeed *
         (this.game.keys.left || this.game.keys.right ? sin45 : 1);
     } else if (this.game.keys.down) {
+      this.rollDown();
       this.speedY =
         this.maxSpeed *
         (this.game.keys.left || this.game.keys.right ? sin45 : 1);
+    } else {
+      this.rollToIdle();
     }
 
     // Handle horizontal movement
@@ -65,8 +77,18 @@ export default class Player {
     );
   }
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "black";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fillStyle = "#0007";
+    ctx.drawImage(
+      this.sheet,
+      90 * this.sheetOffsetX,
+      0,
+      90,
+      48,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
   }
 
@@ -77,6 +99,36 @@ export default class Player {
         new Projectile(this.game, this.x + this.width, this.y + this.height / 2)
       );
       this.lastShotTime = currentTime;
+    }
+  }
+
+  // Animation methods
+  rollUp() {
+    if (this.sheetOffsetX > 0) {
+      this.staggerFrames--;
+      if (this.staggerFrames < 0) {
+        this.staggerFrames = 2;
+        this.sheetOffsetX--;
+      }
+    }
+  }
+  rollDown() {
+    if (this.sheetOffsetX < 4) {
+      this.staggerFrames--;
+      if (this.staggerFrames < 0) {
+        this.staggerFrames = 2;
+        this.sheetOffsetX++;
+      }
+    }
+  }
+  rollToIdle() {
+    let diff = 2 > this.sheetOffsetX;
+    if (this.sheetOffsetX !== 2) {
+      this.staggerFrames--;
+      if (this.staggerFrames < 0) {
+        this.staggerFrames = 2;
+        this.sheetOffsetX += diff ? 1 : -1;
+      }
     }
   }
 }
