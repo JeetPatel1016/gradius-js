@@ -4,7 +4,7 @@ export default class UI {
   game: Game;
   fontSize = 25;
   fontFamily = "Press Start 2P";
-  color = "black";
+  color = "white";
   constructor(game: Game) {
     this.game = game;
   }
