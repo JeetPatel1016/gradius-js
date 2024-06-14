@@ -27,10 +27,77 @@ export class Enemy {
 }
 
 export class Garun extends Enemy {
+  sheet: HTMLImageElement;
+  staggerFrames = 2;
+  sheetOffsetX = 0;
+
   constructor(game: Game) {
     super(game);
-    this.width = 50;
-    this.height = 50;
+    this.width = 60 / 1.2;
+    this.height = 60 / 1.2;
     this.y = Math.random() * (this.game.height * 0.8 - this.height);
+    this.sheet = document.getElementById("garun") as HTMLImageElement;
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(
+      this.sheet,
+      60 * this.sheetOffsetX,
+      0,
+      60,
+      60,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+  }
+  update() {
+    super.update();
+    this.animateSprite();
+  }
+  animateSprite() {
+    this.staggerFrames--;
+    if (this.staggerFrames < 0) {
+      this.staggerFrames = 2;
+      this.sheetOffsetX = (this.sheetOffsetX + 1) % 8;
+    }
+  }
+}
+
+export class Flipper extends Enemy {
+  sheet: HTMLImageElement;
+  staggerFrames = 2;
+  sheetOffsetX = 0;
+
+  constructor(game: Game) {
+    super(game);
+    this.width = 48 / 1.2;
+    this.height = 48 / 1.2;
+    this.y = Math.random() * (this.game.height * 0.8 - this.height);
+    this.sheet = document.getElementById("flipper") as HTMLImageElement;
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(
+      this.sheet,
+      48 * this.sheetOffsetX,
+      0,
+      48,
+      48,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+  }
+  update() {
+    super.update();
+    this.animateSprite();
+  }
+  animateSprite() {
+    this.staggerFrames--;
+    if (this.staggerFrames < 0) {
+      this.staggerFrames = 2;
+      this.sheetOffsetX = (this.sheetOffsetX + 1) % 6;
+    }
   }
 }

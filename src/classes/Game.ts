@@ -1,5 +1,5 @@
 import Background from "./Background";
-import { Enemy, Garun } from "./Enemy";
+import { Enemy, Flipper, Garun } from "./Enemy";
 import InputHandler from "./InputHandler";
 import Player from "./Player";
 import Projectile from "./Projectile";
@@ -89,7 +89,7 @@ export default class Game {
     });
   }
   addEnemy() {
-    this.enemies.push(new Garun(this));
+    this.enemies.push(new Garun(this), new Flipper(this));
   }
   checkCollision(
     rect1: Player | Enemy | Projectile,
