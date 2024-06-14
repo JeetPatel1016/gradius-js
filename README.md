@@ -5,11 +5,9 @@ A TypeScript remake of the NES classic game 'Gradius', built with Vanilla JavaSc
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Features](#features)
 - [Installation](#installation)
 - [Controls](#controls)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction
 
