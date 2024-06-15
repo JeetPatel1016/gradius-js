@@ -1,5 +1,6 @@
 import Background from "./Background";
 import { Enemy, Flipper, Garun } from "./Enemy";
+import Explosion from "./Explosion";
 import InputHandler from "./InputHandler";
 import Player from "./Player";
 import Projectile from "./Projectile";
@@ -34,6 +35,7 @@ export default class Game {
   enemies: Enemy[] = [];
   enemyTimer = 0;
   enemyInterval = 100;
+  explosions: Explosion[] = [];
 
   // Game States
   gameOver = false;
@@ -59,6 +61,7 @@ export default class Game {
       if (this.checkCollision(this.player, enemy)) {
         this.player.lives = Math.max(this.player.lives - 1, 0);
         enemy.markedForDeletion = true;
+        this.explosions.push(new Explosion(this, enemy.x, enemy.y));
       }
       // Check collision of enemy with projectiles
       this.player.projectiles.forEach((projectile) => {
@@ -68,11 +71,16 @@ export default class Game {
           if (enemy.lives <= 0) {
             this.score += enemy.score;
             enemy.markedForDeletion = true;
+            this.explosions.push(new Explosion(this, enemy.x, enemy.y));
           }
         }
       });
     });
     this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
+    this.explosions.forEach((explosion) => explosion.update());
+    this.explosions.filter((explosion) => !explosion.markedForDeletion);
+
+    // Adding enemies every 2 seconds
     if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
       this.addEnemy();
       this.enemyTimer = 0;
@@ -86,6 +94,9 @@ export default class Game {
     this.ui.draw(ctx);
     this.enemies.forEach((enemy) => {
       enemy.draw(ctx);
+    });
+    this.explosions.forEach((explosion) => {
+      explosion.draw(ctx);
     });
   }
   addEnemy() {

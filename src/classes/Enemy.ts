@@ -77,6 +77,8 @@ export class Flipper extends Enemy {
     this.sheet = document.getElementById("flipper") as HTMLImageElement;
   }
   draw(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+    ctx.filter = "hue-rotate(125deg) saturate(1.25)";
     ctx.drawImage(
       this.sheet,
       48 * this.sheetOffsetX,
@@ -88,6 +90,7 @@ export class Flipper extends Enemy {
       this.width,
       this.height
     );
+    ctx.restore();
   }
   update() {
     super.update();
