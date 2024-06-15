@@ -27,7 +27,6 @@ export default class Projectile {
     if (this.x > this.game.width) this.markedForDelete = true;
   }
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "#0000ff7f";
     ctx.drawImage(
       this.sheet,
       27 * this.sheetOffsetX,
@@ -39,7 +38,6 @@ export default class Projectile {
       this.width,
       this.height
     );
-    // ctx.fillRect(this.x, this.y, this.width, this.height);
   }
   animateSprite() {
     this.staggerFrames--;

@@ -78,7 +78,9 @@ export class Flipper extends Enemy {
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
-    ctx.filter = "hue-rotate(125deg) saturate(1.25)";
+    ctx.shadowColor = "#E8E0987F";
+    ctx.shadowBlur = 15;
+    ctx.filter = "sepia(0.9) hue-rotate(-15deg) saturate(5)";
     ctx.drawImage(
       this.sheet,
       48 * this.sheetOffsetX,
