@@ -86,6 +86,21 @@ export default class Game {
             }
           }
         });
+        // Check collision between projectiles from options and enemies
+        this.player.options.length &&
+          this.player.options.forEach((option) =>
+            option.projectiles.forEach((projectile) => {
+              if (this.checkCollision(projectile, enemy)) {
+                enemy.lives--;
+                projectile.markedForDelete = true;
+                if (enemy.lives <= 0) {
+                  this.score += enemy.score;
+                  enemy.markedForDeletion = true;
+                  this.explosions.push(new Explosion(this, enemy.x, enemy.y));
+                }
+              }
+            })
+          );
       });
       this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
 

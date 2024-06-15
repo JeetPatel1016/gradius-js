@@ -1,4 +1,5 @@
 import Game from "./Game";
+import Option from "./Option";
 import Projectile from "./Projectile";
 
 export default class Player {
@@ -16,6 +17,10 @@ export default class Player {
   projectiles: Projectile[] = [];
   lastShotTime = 0;
   shootCooldown = 100;
+
+  // Options
+  previousPositions: { x: number; y: number }[] = [];
+  options: Option[] = [];
 
   // Sprite Animation
   sheet: HTMLImageElement;
@@ -35,7 +40,6 @@ export default class Player {
     // Reset speed
     this.speedX = 0;
     this.speedY = 0;
-    // this.sheetOffsetX = 2;
 
     // Handle vertical movement
     if (this.game.keys.up) {
@@ -68,16 +72,34 @@ export default class Player {
       Math.min(this.y, this.game.height * 0.8 - this.height - 12)
     );
 
-    // Handle shooting projectiles
-    if (this.game.keys.shoot) this.shoot();
+    if (this.isLastPositionChanged()) {
+      this.previousPositions = this.previousPositions.slice(0, 100);
+      this.previousPositions.unshift({ x: this.x, y: this.y });
+      this.options.length && this.options.forEach((option) => option.update());
+    }
+    this.options.length &&
+      this.options.forEach((option) => option.animateSprite());
 
+    // Handle shooting projectiles
+    if (this.game.keys.shoot) {
+      this.options.length && this.options.forEach((option) => option.shoot());
+      this.shoot();
+    }
+
+    this.options.forEach((option) => {
+      option.projectiles.forEach((projectile) => projectile.update());
+      option.projectiles = option.projectiles.filter(
+        (projectile) => !projectile.markedForDelete
+      );
+    });
     this.projectiles.forEach((projectile) => projectile.update());
     this.projectiles = this.projectiles.filter(
       (projectile) => !projectile.markedForDelete
     );
   }
   draw(ctx: CanvasRenderingContext2D) {
-    if (this.game.isMoving)
+    if (this.game.isMoving) {
+      this.options.length && this.options.forEach((option) => option.draw(ctx));
       ctx.drawImage(
         this.sheet,
         90 * this.sheetOffsetX,
@@ -89,6 +111,7 @@ export default class Player {
         this.width,
         this.height
       );
+    }
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
   }
 
@@ -105,6 +128,8 @@ export default class Player {
   reset() {
     this.x = 20;
     this.y = (this.game.height * 0.8) / 2;
+    this.previousPositions = [];
+    this.options = [];
   }
   // Animation methods
   rollUp() {
@@ -134,5 +159,16 @@ export default class Player {
         this.sheetOffsetX += diff ? 1 : -1;
       }
     }
+  }
+  // Handling options
+  addOption() {
+    this.options.push(new Option(this.game, this, this.options.length));
+  }
+  isLastPositionChanged() {
+    if (!this.previousPositions[0]) return true;
+    const { x, y } = this.previousPositions[0];
+    if (x !== this.x || y !== this.y) return true;
+
+    return false;
   }
 }
