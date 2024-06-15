@@ -22,4 +22,7 @@ export default class Background {
   draw(ctx: CanvasRenderingContext2D) {
     this.layers.forEach((layer) => layer.draw(ctx));
   }
+  reset() {
+    this.layers.forEach((layer) => layer.reset());
+  }
 }

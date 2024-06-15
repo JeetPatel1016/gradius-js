@@ -37,4 +37,7 @@ export default class Layer {
     );
     ctx.restore();
   }
+  reset() {
+    this.x = 0;
+  }
 }

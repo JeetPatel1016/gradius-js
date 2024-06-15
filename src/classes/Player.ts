@@ -25,7 +25,7 @@ export default class Player {
   constructor(game: Game) {
     this.game = game;
     this.x = 20;
-    this.y = 100;
+    this.y = (this.game.height * 0.8) / 2;
     this.width = 90 / 1.2;
     this.height = 48 / 1.2;
     this.sheet = document.getElementById("vicViper") as HTMLImageElement;
@@ -77,18 +77,18 @@ export default class Player {
     );
   }
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "#0007";
-    ctx.drawImage(
-      this.sheet,
-      90 * this.sheetOffsetX,
-      0,
-      90,
-      48,
-      this.x,
-      this.y,
-      this.width,
-      this.height
-    );
+    if (this.game.isMoving)
+      ctx.drawImage(
+        this.sheet,
+        90 * this.sheetOffsetX,
+        0,
+        90,
+        48,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
     this.projectiles.forEach((projectile) => projectile.draw(ctx));
   }
 
@@ -102,6 +102,10 @@ export default class Player {
     }
   }
 
+  reset() {
+    this.x = 20;
+    this.y = (this.game.height * 0.8) / 2;
+  }
   // Animation methods
   rollUp() {
     if (this.sheetOffsetX > 0) {

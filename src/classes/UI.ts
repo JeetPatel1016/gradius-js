@@ -21,6 +21,10 @@ export default class UI {
   renderScore(ctx: CanvasRenderingContext2D) {
     ctx.font = `${this.fontSize}px '${this.fontFamily}'`;
     ctx.fillStyle = this.color;
-    ctx.fillText(String(this.game.score).padStart(7, "0"), 250, 600 - 12);
+    if (this.game.gameOver) {
+      ctx.fillText("GAME OVER", 250, 600 - 12);
+    } else {
+      ctx.fillText(String(this.game.score).padStart(7, "0"), 250, 600 - 12);
+    }
   }
 }

@@ -1,6 +1,6 @@
 import Background from "./Background";
 import { Enemy, Flipper, Garun } from "./Enemy";
-import Explosion from "./Explosion";
+import { Explosion, PlayerExplosion } from "./Explosion";
 import InputHandler from "./InputHandler";
 import Player from "./Player";
 import Projectile from "./Projectile";
@@ -39,6 +39,8 @@ export default class Game {
 
   // Game States
   gameOver = false;
+  isMoving = true;
+  timeoutSignal = 0;
 
   // Background Layers Handling
   speed = 1;
@@ -53,40 +55,61 @@ export default class Game {
     this.bg = new Background(this);
   }
   update() {
-    this.bg.update();
-    this.player.update();
-    this.enemies.forEach((enemy) => {
-      enemy.update();
-      // Check collision of enemy with player
-      if (this.checkCollision(this.player, enemy)) {
-        this.player.lives = Math.max(this.player.lives - 1, 0);
-        enemy.markedForDeletion = true;
-        this.explosions.push(new Explosion(this, enemy.x, enemy.y));
-      }
-      // Check collision of enemy with projectiles
-      this.player.projectiles.forEach((projectile) => {
-        if (this.checkCollision(projectile, enemy)) {
-          enemy.lives--;
-          projectile.markedForDelete = true;
-          if (enemy.lives <= 0) {
-            this.score += enemy.score;
-            enemy.markedForDeletion = true;
-            this.explosions.push(new Explosion(this, enemy.x, enemy.y));
+    if (this.isMoving) {
+      this.bg.update();
+      this.player.update();
+      this.enemies.forEach((enemy) => {
+        enemy.update();
+        // Check collision of enemy with player
+        if (this.checkCollision(this.player, enemy)) {
+          this.player.lives = Math.max(this.player.lives - 1, 0);
+          if (this.player.lives === 0) {
+            this.gameOver = true;
           }
-        }
-      });
-    });
-    this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
-    this.explosions.forEach((explosion) => explosion.update());
-    this.explosions.filter((explosion) => !explosion.markedForDeletion);
+          this.isMoving = false;
+          this.explosions.push(
+            new PlayerExplosion(this, this.player.x - 15, this.player.y - 4)
+          );
 
-    // Adding enemies every 2 seconds
-    if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
-      this.addEnemy();
-      this.enemyTimer = 0;
+          enemy.markedForDeletion = true;
+          this.explosions.push(new Explosion(this, enemy.x, enemy.y));
+        }
+        // Check collision of enemy with projectiles
+        this.player.projectiles.forEach((projectile) => {
+          if (this.checkCollision(projectile, enemy)) {
+            enemy.lives--;
+            projectile.markedForDelete = true;
+            if (enemy.lives <= 0) {
+              this.score += enemy.score;
+              enemy.markedForDeletion = true;
+              this.explosions.push(new Explosion(this, enemy.x, enemy.y));
+            }
+          }
+        });
+      });
+      this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
+
+      // Adding enemies every 2 seconds
+      if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
+        this.addEnemy();
+        this.enemyTimer = 0;
+      } else {
+        this.enemyTimer++;
+      }
     } else {
-      this.enemyTimer++;
+      if (!this.timeoutSignal && !this.gameOver)
+        this.timeoutSignal = setTimeout(() => {
+          this.bg.reset();
+          this.player.reset();
+          this.enemies = [];
+          this.player.projectiles = [];
+          this.explosions = [];
+          this.timeoutSignal = 0;
+          this.isMoving = true;
+        }, 3000);
     }
+    this.explosions.filter((explosion) => !explosion.markedForDeletion);
+    this.explosions.forEach((explosion) => explosion.update());
   }
   draw(ctx: CanvasRenderingContext2D) {
     this.bg.draw(ctx);

@@ -1,6 +1,6 @@
 import Game from "./Game";
 
-export default class Explosion {
+export class Explosion {
   game: Game;
   sheet: HTMLImageElement;
   x: number;
@@ -17,7 +17,6 @@ export default class Explosion {
     this.sheet = document.getElementById("enemyExplosion") as HTMLImageElement;
     this.x = x;
     this.y = y;
-    console.log("Boom");
   }
   update() {
     this.staggerFrames--;
@@ -33,6 +32,39 @@ export default class Explosion {
     ctx.drawImage(
       this.sheet,
       this.sheetOffsetX * 60,
+      0,
+      this.width,
+      this.height,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+  }
+}
+
+export class PlayerExplosion extends Explosion {
+  maxFrames = 4;
+  constructor(game: Game, x: number, y: number) {
+    super(game, x, y);
+    this.width = 128 / 1.2;
+    this.height = 60 / 1.2;
+    this.sheet = document.getElementById("playerExplosion") as HTMLImageElement;
+  }
+  update() {
+    this.staggerFrames--;
+    if (this.staggerFrames < 0) {
+      this.staggerFrames = 2;
+      this.sheetOffsetX++;
+    }
+    if (this.sheetOffsetX >= this.maxFrames) {
+      this.markedForDeletion = true;
+    }
+  }
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(
+      this.sheet,
+      this.sheetOffsetX * 128,
       0,
       this.width,
       this.height,
