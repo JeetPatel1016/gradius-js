@@ -13,6 +13,8 @@ A TypeScript remake of the NES classic game 'Gradius', built with Vanilla JavaSc
 
 Gradius-js is a modern, browser-based remake of the iconic NES game 'Gradius'. This project uses Vanilla TypeScript to recreate the classic space shooter experience, bringing the nostalgia of the original game to today's web technologies.
 
+Demo here: [Gradius JS](https://jeetpatel1016.github.io/gradius-js)
+
 ## Installation
 
 1. Clone the repository:
