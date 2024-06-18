@@ -8,7 +8,7 @@ canvas.height = 600;
 
 const game = new Game(canvas.width, canvas.height);
 
-const FPS = 60;
+const FPS = 45;
 let elapsed: number, end: number;
 let now = Date.now();
 
